@@ -5,6 +5,8 @@ import com.rabbitmq.client.*;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Administrator
  * 2020/12/30 - 15:32
@@ -26,33 +28,29 @@ public class Consumer {
                 false,
                 null
         );
-        DeliverCallback deliverCallback = new DeliverCallback() {
-            @Override
-            public void handle(String consumerTag, Delivery message) throws IOException {
-                String msg = new String(message.getBody());
-                System.out.println("receive:" + msg);
-                for (int i = 0; i < msg.length(); i++) {
-                    if (msg.charAt(i) == '.'){
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+        DeliverCallback deliverCallback = (String consumerTag, Delivery message) -> {
+            String msg = new String(message.getBody());
+            System.out.println("receive:" + msg);
+            for (int i = 0; i < msg.length(); i++) {
+                if (msg.charAt(i) == '.') {
+                    try {
+                        sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-                System.out.println("消息处理结束....");
             }
+            channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
+            System.out.println("消息处理结束....");
         };
-        CancelCallback cancelCallback = new CancelCallback() {
-            @Override
-            public void handle(String consumerTag) throws IOException {
+        CancelCallback cancelCallback = (String consumerTag) -> {
 
-            }
         };
         // 消费数据，即接收数据
         channel.basicConsume(
                 "helloworld",
-                true,
+                // true自动确认回执，false手动确认回执
+                false,
                 deliverCallback,
                 cancelCallback
         );
