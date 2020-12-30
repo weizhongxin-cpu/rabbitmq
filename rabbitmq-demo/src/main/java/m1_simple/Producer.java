@@ -18,8 +18,8 @@ public class Producer {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("192.168.64.140");
         factory.setPort(5672);
-        factory.setUsername("admin");
-        factory.setPassword("admin");
+        factory.setUsername("weizhongxin");
+        factory.setPassword("123456");
 //        factory.setVirtualHost("/weizhongxin");
         /*
          * 与rabbitmq服务器建立连接,
